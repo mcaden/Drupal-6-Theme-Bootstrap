@@ -1,1 +1,13 @@
-/* put your custom CSS in here */
+.input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
+  margin-top: -1px;
+}
+
+#search input[type="text"] {
+  -webkit-transition: width .5s; /* Safari */
+  transition: width .5s;
+  width: 100px;
+}
+
+#search input[type="text"]:focus {
+  width: 200px;
+}

@@ -1,21 +1,27 @@
-name = bootstrap
-description = Drupal base theme built with Blueprint CSS framework.
+name = Bootstrap Foundation
+description = Drupal base theme built with Bootstrap CSS framework.
 
 core = 6.x
 engine = phptemplate
 
-stylesheets[screen,projection][] = css/bootstrap.css
+stylesheets[screen,projection][] = css/bootstrap.min.css
+stylesheets[screen,projection][] = css/font-awesome.min.css
 stylesheets[screen,projection][] = css/style.css
 
-scripts[] = scripts/general.js
+scripts[] = js/menu-collapse.js
+scripts[] = js/theme.js
 
 screenshot = screenshot.png
 
+regions[header] = Header
+regions[banner] = Banner
 regions[left] = First sidebar
 regions[right] = Second sidebar
 regions[content] = Content
-regions[header] = Header
-regions[footer] = Footer
+regions[footer1] = Footer 1
+regions[footer2] = Footer 2
+regions[footer3] = Footer 3
+regions[footer] = Post Footer
 
 ; Let's enable some features
 features[] = logo
@@ -38,6 +44,6 @@ settings[bootstrap_animated_submit]         = 1
 ; Information added by drupal.org packaging script on 2011-03-14
 version = "6.22"
 core = "6.x"
-project = "bootstrap"
+project = "bootstrap_foundation"
 datestamp = "1300142767"
 

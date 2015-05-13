@@ -1,7 +1,7 @@
 <?php
 
 // Include the definition of zen_theme_get_default_settings().
-include_once './' . drupal_get_path('theme', 'bootstrap') . '/template.theme-registry.inc';
+include_once './' . drupal_get_path('theme', 'bootstrap_foundation') . '/template.theme-registry.inc';
 
 
 /**
@@ -14,20 +14,20 @@ include_once './' . drupal_get_path('theme', 'bootstrap') . '/template.theme-reg
  * @return
  *   A form array.
  */
-function bootstrap_settings($saved_settings, $subtheme_defaults = array()) {
+function bootstrap_foundation_settings($saved_settings, $subtheme_defaults = array()) {
   /*
    * The default values for the theme variables. Make sure $defaults exactly
    * matches the $defaults in the template.php file.
    */
 
   // Add CSS to adjust the layout on the settings page
-  drupal_add_css(drupal_get_path('theme', 'bootstrap') . '/css/theme-settings.css', 'theme');
+  drupal_add_css(drupal_get_path('theme', 'bootstrap_foundation') . '/css/theme-settings.css', 'theme');
 
   // Add Javascript to adjust the layout on the settings page
-  // drupal_add_js(drupal_get_path('theme', 'bootstrap') . '/css/theme-settings.js', 'theme');
+  // drupal_add_js(drupal_get_path('theme', 'bootstrap_foundation') . '/css/theme-settings.js', 'theme');
 
   // Get the default values from the .info file.
-  $defaults = bootstrap_theme_get_default_settings('bootstrap');
+  $defaults = bootstrap_foundation_theme_get_default_settings('bootstrap_foundation');
 
   // Allow a subtheme to override the default values.
   $defaults = array_merge($defaults, $subtheme_defaults);
@@ -35,7 +35,7 @@ function bootstrap_settings($saved_settings, $subtheme_defaults = array()) {
   // Merge the saved variables and their default values.
   $settings = array_merge($defaults, $saved_settings);
 
-  $form['bootstrap_dev'] = array(
+  $form['bootstrap_foundation_dev'] = array(
     '#type' => 'fieldset',
     '#title' => t('Development Settings'),
     '#weight' => 5,
@@ -44,32 +44,32 @@ function bootstrap_settings($saved_settings, $subtheme_defaults = array()) {
   );
 
   // Setting for flush all caches
-  $form['bootstrap_dev']['bootstrap_block_edit_links'] = array(
+  $form['bootstrap_foundation_dev']['bootstrap_foundation_block_edit_links'] = array(
      '#type'          => 'checkbox',
      '#title'         => t('Display block editing links.'),
-     '#default_value' => $settings['bootstrap_block_edit_links'],
+     '#default_value' => $settings['bootstrap_foundation_block_edit_links'],
      '#description'   => t('When hovering over blocks, display edit links for the proper users.'),
     );
 
   // Setting for flush all caches
-  $form['bootstrap_dev']['bootstrap_rebuild_registry'] = array(
+  $form['bootstrap_foundation_dev']['bootstrap_foundation_rebuild_registry'] = array(
      '#type'          => 'checkbox',
      '#title'         => t('Rebuild theme registry on every page.'),
-     '#default_value' => $settings['bootstrap_rebuild_registry'],
+     '#default_value' => $settings['bootstrap_foundation_rebuild_registry'],
      '#description'   => t('During theme development, it can be very useful to continuously <a href="!link">rebuild theme registry</a>. WARNING: this is a huge performance penalty and must be turned off on production websites.', array('!link' => 'http://drupal.org/node/173880#theme-registry')),
     );
 
   // Setting to add the showgrid class
-  $form['bootstrap_dev']['bootstrap_showgrid'] = array(
+  $form['bootstrap_foundation_dev']['bootstrap_foundation_showgrid'] = array(
      '#type'          => 'checkbox',
-     '#title'         => t('Show the bootstrap Grid'),
-     '#default_value' => $settings['bootstrap_showgrid'],
+     '#title'         => t('Show the bootstrap Foundation Grid'),
+     '#default_value' => $settings['bootstrap_foundation_showgrid'],
      '#description'   => t('During theme development, it can be very useful to turn on the display of the grid.'),
     );
-  $form['bootstrap_animated_submit'] = array(
+  $form['bootstrap_foundation_animated_submit'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Prevent Duplicate Submits'),
-    '#default_value' => $settings['bootstrap_animated_submit'],
+    '#default_value' => $settings['bootstrap_foundation_animated_submit'],
     '#description'   => t('This can be helpful to prevent users from hitting the submit button twice.'),
     );
 

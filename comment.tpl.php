@@ -1,7 +1,7 @@
 <div class="clear-block comment<?php print($comment->new) ? ' comment-new' : ''; print(isset($comment->status) && $comment->status == COMMENT_NOT_PUBLISHED) ? ' comment-unpublished' : ''; if (isset($author_comment)) print ' author'; print ' '. $zebra; ?>">
   <div class="comment-content">
     <?php if ($picture): ?>
-      <div class="picture span-3">
+      <div class="thumbnail">
         <?php print $picture ?>
       </div>
     <?php endif; ?>

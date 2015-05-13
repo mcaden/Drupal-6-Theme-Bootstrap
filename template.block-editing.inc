@@ -13,7 +13,7 @@
  * @param $hook
  *   The name of the template being rendered ("block" in this case.)
  */
-function bootstrap_preprocess_block_editing(&$vars, $hook) {
+function bootstrap_foundation_preprocess_block_editing(&$vars, $hook) {
   $block = $vars['block'];
   // Display 'edit block' for custom blocks.
   if ($block->module == 'block') {

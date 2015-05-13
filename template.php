@@ -1,22 +1,19 @@
 <?php
 
 // Auto-rebuild the theme registry during theme development.
-if (theme_get_setting('bootstrap_rebuild_registry')) {
+if (theme_get_setting('bootstrap_foundation_rebuild_registry')) {
   drupal_rebuild_theme_registry();
-}
-if (theme_get_setting('bootstrap_animated_submit')) {
-  drupal_add_js(drupal_get_path('theme', 'bootstrap') .'/scripts/submit_animated.js');
 }
 
 /**
  * Implements HOOK_theme().
  */
-function bootstrap_theme(&$existing, $type, $theme, $path) {
+function bootstrap_foundation_theme(&$existing, $type, $theme, $path) {
   if (!db_is_active()) {
     return array();
   }
-  include_once './' . drupal_get_path('theme', 'bootstrap') . '/template.theme-registry.inc';
-  return _bootstrap_theme($existing, $type, $theme, $path);
+  include_once './' . drupal_get_path('theme', 'bootstrap_foundation') . '/template.theme-registry.inc';
+  return _bootstrap_foundation_theme($existing, $type, $theme, $path);
 }
 
 /**
@@ -25,10 +22,11 @@ function bootstrap_theme(&$existing, $type, $theme, $path) {
  * @param $vars
  *   A sequential array of variables passed to the theme function.
  */
-function bootstrap_preprocess_page(&$vars) {
+function bootstrap_foundation_preprocess_page(&$vars) {
   global $user;
   $vars['path'] = base_path() . path_to_theme() .'/';
-  $vars['path_parent'] = base_path() . drupal_get_path('theme', 'bootstrap') . '/';
+  
+  $vars['path_parent'] = base_path() . drupal_get_path('theme', 'bootstrap_foundation') . '/';
   $vars['user'] = $user;
 
   // Prep the logo for being displayed
@@ -68,43 +66,43 @@ function bootstrap_preprocess_page(&$vars) {
   // determine layout
   // 3 columns
   if ($vars['layout'] == 'both') {
-    $vars['left_classes'] = 'col-left span-6';
-    $vars['right_classes'] = 'col-right span-6 last';
-    $vars['center_classes'] = 'col-center span-12';
-    $vars['body_classes'] .= ' col-3 ';
+    $vars['left_classes'] = 'left-sidebar col-md-3';
+    $vars['right_classes'] = 'right-sidebar col-md-3';
+    $vars['center_classes'] = 'main-content col-md-6';
+    $vars['body_classes'] .= '  ';
   }
 
   // 2 columns
   elseif ($vars['layout'] != 'none') {
     // left column & center
     if ($vars['layout'] == 'left') {
-      $vars['left_classes'] = 'col-left span-6';
-      $vars['center_classes'] = 'col-center span-18 last';
+      $vars['left_classes'] = 'left-sidebar col-md-3';
+      $vars['center_classes'] = 'main-content col-md-9';
     }
     // right column & center
     elseif ($vars['layout'] == 'right') {
-      $vars['right_classes'] = 'col-right span-6 last';
-      $vars['center_classes'] = 'col-center span-18';
+      $vars['right_classes'] = 'right-sidebar col-md-3';
+      $vars['center_classes'] = 'main-content col-md-9';
     }
-    $vars['body_classes'] .= ' col-2 ';
+    $vars['body_classes'] .= '  ';
   }
   // 1 column
   else {
-    $vars['center_classes'] = 'col-center span-24';
-    $vars['body_classes'] .= ' col-1 ';
+    $vars['center_classes'] = 'main-content col-md-12';
+    $vars['body_classes'] .= '  ';
   }
 
   $vars['meta'] = '';
   // SEO optimization, add in the node's teaser, or if on the homepage, the mission statement
   // as a description of the page that appears in search engines
   if ($vars['is_front'] && $vars['mission'] != '') {
-    $vars['meta'] .= '<meta name="description" content="'. bootstrap_trim_text($vars['mission']) .'" />'."\n";
+    $vars['meta'] .= '<meta name="description" content="'. bootstrap_foundation_trim_text($vars['mission']) .'" />'."\n";
   }
   elseif (isset($vars['node']->teaser) && $vars['node']->teaser != '') {
-    $vars['meta'] .= '<meta name="description" content="'. bootstrap_trim_text($vars['node']->teaser) .'" />'."\n";
+    $vars['meta'] .= '<meta name="description" content="'. bootstrap_foundation_trim_text($vars['node']->teaser) .'" />'."\n";
   }
   elseif (isset($vars['node']->body) && $vars['node']->body != '') {
-    $vars['meta'] .= '<meta name="description" content="'. bootstrap_trim_text($vars['node']->body) .'" />'."\n";
+    $vars['meta'] .= '<meta name="description" content="'. bootstrap_foundation_trim_text($vars['node']->body) .'" />'."\n";
   }
   // SEO optimization, if the node has tags, use these as keywords for the page
   if (isset($vars['node']->taxonomy)) {
@@ -120,49 +118,9 @@ function bootstrap_preprocess_page(&$vars) {
     $vars['meta'] .= '<meta name="robots" content="noindex,follow" />'. "\n";
   }
 
-  if (theme_get_setting('bootstrap_showgrid')) {
-    $vars['body_classes'] .= ' showgrid ';
-  }
-
-  //Setup the vars for the bootstrap Libraries location.
-  if (module_exists('libraries')) {
-    $vars['bp_library_path'] = module_invoke('libraries', 'get_path', 'bootstrap') .'/';
-  }
-  else {
-    $vars['bp_library_path'] = 'sites/all/libraries/bootstrap/';
-  }
-
-  //Add the screen and print css files
-  drupal_add_css($vars['bp_library_path'] .'bootstrap/screen.css', 'theme', 'screen,projection');
-  $vars['css'] = drupal_add_css($vars['bp_library_path'] .'bootstrap/print.css', 'theme', 'print');
-
-  //Perform RTL - LTR swap and load RTL Styles.
-  if ($vars['language']->dir == 'rtl') {
-    // Remove bootstrap Grid and use RTL grid
-    $css = $vars['css'];
-    $css['screen,projection']['theme'][$vars['bp_library_path'] .'/bootstrap/plugins/rtl/screen.css'] = TRUE;
-
-    //setup rtl css for IE
-    $vars['styles_ie']['ie'] = '<link href="'. $path .'css/ie-rtl.css" rel="stylesheet"  type="text/css"  media="screen, projection" />';
-    $vars['styles_ie']['ie6'] = '<link href="'. $path .'css/ie6-rtl.css" rel="stylesheet"  type="text/css"  media="screen, projection" />';
-  }
-
   // Make sure framework styles are placed above all others.
-  $vars['css_alt'] = bootstrap_css_reorder($vars['css']);
+  $vars['css_alt'] = bootstrap_foundation_css_reorder($vars['css']);
   $vars['styles'] = drupal_get_css($vars['css_alt']);
-
-  /* I like to embed the Google search in various places, uncomment to make use of this
-  // setup search for custom placement
-  $search = module_invoke('google_cse', 'block', 'view', '0');
-  $vars['search'] = $search['content'];
-  */
-
-  /* to remove specific CSS files from modules use this trick
-  // Remove stylesheets
-  $css = $vars['css'];
-  unset($css['all']['module']['sites/all/modules/contrib/plus1/plus1.css']);
-  $vars['styles'] = drupal_get_css($css);
-  */
 
 }
 
@@ -172,7 +130,7 @@ function bootstrap_preprocess_page(&$vars) {
  * @param $vars
  *   A sequential array of variables passed to the theme function.
  */
-function bootstrap_preprocess_node(&$vars) {
+function bootstrap_foundation_preprocess_node(&$vars) {
   $node = $vars['node']; // for easy reference
   // for easy variable adding for different node types
   switch ($node->type) {
@@ -187,7 +145,7 @@ function bootstrap_preprocess_node(&$vars) {
  * @param $vars
  *   A sequential array of variables passed to the theme function.
  */
-function bootstrap_preprocess_comment(&$vars) {
+function bootstrap_foundation_preprocess_comment(&$vars) {
   static $comment_count = 1; // keep track the # of comments rendered
   // Calculate the comment number for each comment with accounting for pages.
   $page = 0;
@@ -233,7 +191,7 @@ function bootstrap_preprocess_comment(&$vars) {
  * @param $hook
  *   The name of the template being rendered ("block" in this case.)
  */
-function bootstrap_preprocess_block(&$vars, $hook) {
+function bootstrap_foundation_preprocess_block(&$vars, $hook) {
   $block = $vars['block'];
 
   // Special classes for blocks.
@@ -247,9 +205,9 @@ function bootstrap_preprocess_block(&$vars, $hook) {
   $vars['edit_links_array'] = array();
   $vars['edit_links'] = '';
 
-  if (theme_get_setting('bootstrap_block_edit_links') && user_access('administer blocks')) {
-    include_once './' . drupal_get_path('theme', 'bootstrap') . '/template.block-editing.inc';
-    bootstrap_preprocess_block_editing($vars, $hook);
+  if (theme_get_setting('bootstrap_foundation_block_edit_links') && user_access('administer blocks')) {
+    include_once './' . drupal_get_path('theme', 'bootstrap_foundation') . '/template.block-editing.inc';
+    bootstrap_foundation_preprocess_block_editing($vars, $hook);
     $classes[] = 'with-block-editing';
   }
 
@@ -264,7 +222,7 @@ function bootstrap_preprocess_block(&$vars, $hook) {
  * @param $vars
  *   A sequential array of variables passed to the theme function.
  */
-function bootstrap_preprocess_box(&$vars) {
+function bootstrap_foundation_preprocess_box(&$vars) {
   // rename to more common text
   if (strpos($vars['title'], 'Post new comment') === 0) {
     $vars['title'] = 'Add your comment';
@@ -282,7 +240,7 @@ function bootstrap_preprocess_box(&$vars) {
  *   A string containing an HTML link to the user's page if the passed object
  *   suggests that this is a site user. Otherwise, only the username is returned.
  */
-function bootstrap_username($object) {
+function bootstrap_foundation_username($object) {
   if ($object->uid && $object->name) {
     // Shorten the name when it is too long or it will break many tables.
     if (drupal_strlen($object->name) > 20) {
@@ -325,12 +283,35 @@ function bootstrap_username($object) {
  *
  * @return a string containing the helptext for the current page.
  */
-function bootstrap_help() {
+function bootstrap_foundation_help() {
   $help = menu_get_active_help();
   // Drupal sometimes returns empty <p></p> so strip tags to check if empty
   if (strlen(strip_tags($help)) > 1) {
     return '<div class="help">'. $help .'</div>';
   }
+}
+
+function bootstrap_foundation_button($element) {
+  // Make sure not to overwrite classes.
+  if (isset($element['#attributes']['class'])) {
+    $element['#attributes']['class'] = 'form-' . $element['#button_type'] . ' ' . $element['#attributes']['class'] . ' btn';
+  }
+  else {
+    $element['#attributes']['class'] = 'form-' . $element['#button_type'] . ' btn';
+  }
+  
+  
+  if($element['#id'] == 'edit-delete') {
+    $element['#attributes']['class'] .= ' btn-danger';
+  } else if ($element['#id'] == 'edit-reset') {
+    $element['#attributes']['class'] .= ' btn-warning';
+  } else if ($element['#id'] == 'edit-preview') {
+    $element['#attributes']['class'] .= ' btn-primary';
+  } else {
+    $element['#attributes']['class'] .= ' btn-default';
+  }
+
+  return '<input type="submit" ' . (empty($element['#name']) ? '' : 'name="' . $element['#name'] . '" ') . 'id="' . $element['#id'] . '" value="' . check_plain($element['#value']) . '" ' . drupal_attributes($element['#attributes']) . " />\n";
 }
 
 /**
@@ -342,34 +323,31 @@ function bootstrap_help() {
  *   An array containing the breadcrumb links.
  * @return a string containing the breadcrumb output.
  */
-function bootstrap_breadcrumb($breadcrumb) {
+function bootstrap_foundation_breadcrumb($breadcrumb) {
   // Don't add the title if menu_breadcrumb exists. TODO: Add a settings
   // checkbox to optionally control the display.
   if (!module_exists('menu_breadcrumb') && count($breadcrumb) > 0) {
       $breadcrumb[] = drupal_get_title();
   }
-  return '<div class="breadcrumb">'. implode(' &rsaquo; ', $breadcrumb) .'</div>';
-}
-
-/**
- * Rewrite of theme_form_element() to suppress ":" if the title ends with a punctuation mark.
- */
-function bootstrap_form_element($element, $value) {
-  $args = func_get_args();
-  return preg_replace('@([.!?]):\s*(</label>)@i', '$1$2', call_user_func_array('theme_form_element', $args));
+  
+  $crumbs = implode(' &rsaquo; ', $breadcrumb);
+  
+  return $crumbs != '' ? '<div class="breadcrumb">'. $crumbs .'</div>' : '';
 }
 
 /**
  * Set status messages to use bootstrap CSS classes.
  */
-function bootstrap_status_messages($display = NULL) {
+function bootstrap_foundation_status_messages($display = NULL) {
   $output = '';
   foreach (drupal_get_messages($display) as $type => $messages) {
     // bootstrap can either call this success or notice
     if ($type == 'status') {
       $type = 'success';
+    } else if($type == 'error') {
+      $type = 'danger';
     }
-    $output .= "<div class=\"messages $type\">\n";
+    $output .= "<div class=\"alert alert-$type\">\n";
     if (count($messages) > 1) {
       $output .= " <ul>\n";
       foreach ($messages as $message) {
@@ -388,7 +366,7 @@ function bootstrap_status_messages($display = NULL) {
 /**
  * Override comment wrapper to show you must login to comment.
  */
-function bootstrap_comment_wrapper($content, $node) {
+function bootstrap_foundation_comment_wrapper($content, $node) {
   global $user;
   $output = '';
 
@@ -425,7 +403,7 @@ if (!module_exists('advanced_forum')) {
  * @ingroup themeable
  */
 
-  function bootstrap_forum_icon($new_posts, $num_posts = 0, $comment_mode = 0, $sticky = 0) {
+  function bootstrap_foundation_forum_icon($new_posts, $num_posts = 0, $comment_mode = 0, $sticky = 0) {
     // because we are using a theme() instead of copying the forum-icon.tpl.php into the theme
     // we need to add in the logic that is in preprocess_forum_icon() since this isn't available
     if ($num_posts > variable_get('forum_hot_topic', 15)) {
@@ -459,7 +437,7 @@ if (!module_exists('advanced_forum')) {
  * Makes forums look better and is great for performance
  * More: http://www.sysarchitects.com/node/70
  */
-function bootstrap_forum_topic_navigation($node) {
+function bootstrap_foundation_forum_topic_navigation($node) {
   return '';
 }
 }
@@ -467,7 +445,7 @@ function bootstrap_forum_topic_navigation($node) {
 /**
  * Trim a post to a certain number of characters, removing all HTML.
  */
-function bootstrap_trim_text($text, $length = 150) {
+function bootstrap_foundation_trim_text($text, $length = 150) {
   // remove any HTML or line breaks so these don't appear in the text
   $text = trim(str_replace(array("\n", "\r", "\r\n"), ' ', strip_tags(html_entity_decode($text, ENT_QUOTES, 'UTF-8'))));
   $text = trim(substr($text, 0, $length));
@@ -484,6 +462,71 @@ function bootstrap_trim_text($text, $length = 150) {
   return $text;
 }
 
+function bootstrap_foundation_preprocess_search_theme_form(&$variables) {
+  // Input
+  
+  $variables['form']['search_theme_form']['#title'] = '';
+  $variables['form']['search_theme_form']['#attributes'] = array('placeholder' => 'Search');
+  $variables['form']['search_theme_form']['#prefix'] = '<div class="input-group">';
+  $variables['form']['search_theme_form']['#attributes']['class'] = 'form-control';
+  $variables['form']['search_theme_form']['#skipWrapper'] = true;
+  unset($variables['form']['search_theme_form']['#printed']);
+  
+  // Button
+  $variables['form']['submit']['#type'] = 'button';
+  $variables['form']['submit']['#value'] = decode_entities('&#xe003;');
+  $variables['form']['submit']['#attributes']['class'] = 'glyphicon';
+  $variables['form']['submit']['#prefix'] = '<span class="input-group-btn">';
+  $variables['form']['submit']['#suffix'] = '</span></div>';
+  $variables['form']['search_theme_form']['#skipWrapper'] = true;
+  unset($variables['form']['submit']['#printed']);
+  
+  // Render the form
+  $variables['search']['search_theme_form'] = drupal_render($variables['form']['search_theme_form']);
+  $variables['search']['submit'] = drupal_render($variables['form']['submit']);
+
+
+  $variables['search_form'] = implode($variables['search']);
+}
+
+function bootstrap_foundation_form_element($element, $value) {
+  // This is also used in the installer, pre-database setup.
+  $t = get_t();
+
+  $output = '';
+  if(!isset($element['#skipWrapper']) || !$element['#skipWrapper']) {
+    $output = '<div class="form-item"';
+    if (!empty($element['#id'])) {
+      $output .= ' id="' . $element['#id'] . '-wrapper"';
+    }
+    $output .= ">\n";
+  }
+    
+  $required = !empty($element['#required']) ? '<span class="form-required" title="' . $t('This field is required.') . '">*</span>' : '';
+
+  if (!empty($element['#title'])) {
+    $title = $element['#title'];
+    if (!empty($element['#id'])) {
+      $output .= ' <label for="' . $element['#id'] . '">' . $t('!title: !required', array('!title' => filter_xss_admin($title), '!required' => $required)) . "</label>\n";
+    }
+    else {
+      $output .= ' <label>' . $t('!title: !required', array('!title' => filter_xss_admin($title), '!required' => $required)) . "</label>\n";
+    }
+  }
+
+  $output .= " $value\n";
+
+  if (!empty($element['#description'])) {
+    $output .= ' <div class="description">' . $element['#description'] . "</div>\n";
+  }
+
+  if(!isset($element['#skipWrapper']) || !$element['#skipWrapper']) {
+    $output .= "</div>\n";
+  }
+
+  return $output;
+}
+
 /**
  * This rearranges how the style sheets are included so the framework styles
  * are included first.
@@ -492,7 +535,7 @@ function bootstrap_trim_text($text, $length = 150) {
  * the same name as a framework style. This can be removed once Drupal supports
  * weighted styles.
  */
-function bootstrap_css_reorder($css) {
+function bootstrap_foundation_css_reorder($css) {
   foreach ($css as $media => $styles_from_bp) {
     // Setup framework group.
     if (!isset($css[$media]['libraries'])) {
