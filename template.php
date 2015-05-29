@@ -492,6 +492,10 @@ function bootstrap_foundation_button($element) {
  * @return a string containing the breadcrumb output.
  */
 function bootstrap_foundation_breadcrumb($breadcrumb) {
+  if(count($breadcrumb) <= 1) {
+    return "";
+  }
+  
   // Don't add the title if menu_breadcrumb exists. TODO: Add a settings
   // checkbox to optionally control the display.
   if (!module_exists('menu_breadcrumb') && count($breadcrumb) > 0) {
