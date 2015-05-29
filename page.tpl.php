@@ -63,7 +63,7 @@
         }
 
         if ($tabs != '') {
-          print '<div class="tabs">'. $tabs .'</div>';
+          print '<div class="local-tasks">'. $tabs .'</div>';
         }
 
         if ($messages != '') {

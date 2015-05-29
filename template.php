@@ -16,6 +16,174 @@ function bootstrap_foundation_theme(&$existing, $type, $theme, $path) {
   return _bootstrap_foundation_theme($existing, $type, $theme, $path);
 }
 
+function bootstrap_foundation_select($element) {
+  $select = '';
+  $size = $element['#size'] ? ' size="' . $element['#size'] . '"' : '';
+  _form_set_class($element, array('form-select'));
+  _form_set_class($element, array('form-control'));
+  $multiple = $element['#multiple'];
+  return theme('form_element', $element, '<select name="' . $element['#name'] . '' . ($multiple ? '[]' : '') . '"' . ($multiple ? ' multiple="multiple" ' : '') . drupal_attributes($element['#attributes']) . ' id="' . $element['#id'] . '" ' . $size . '>' . form_select_options($element) . '</select>');
+}
+
+function bootstrap_foundation_textfield($element) {
+  $size = empty($element['#size']) ? '' : ' size="' . $element['#size'] . '"';
+  $maxlength = empty($element['#maxlength']) ? '' : ' maxlength="' . $element['#maxlength'] . '"';
+  $class = array('form-text');
+  $extra = '';
+  $output = '';
+  _form_set_class($element, array('form-control'));
+
+  if ($element['#autocomplete_path'] && menu_valid_path(array('link_path' => $element['#autocomplete_path']))) {
+    drupal_add_js('misc/autocomplete.js');
+    $class[] = 'form-autocomplete';
+    $extra = '<input class="autocomplete" type="hidden" id="' . $element['#id'] . '-autocomplete" value="' . check_url(url($element['#autocomplete_path'], array('absolute' => TRUE))) . '" disabled="disabled" />';
+  }
+  _form_set_class($element, $class);
+
+  if (isset($element['#field_prefix'])) {
+    $output .= '<span class="field-prefix">' . $element['#field_prefix'] . '</span> ';
+  }
+
+  $output .= '<input type="text"' . $maxlength . ' name="' . $element['#name'] . '" id="' . $element['#id'] . '"' . $size . ' value="' . check_plain($element['#value']) . '"' . drupal_attributes($element['#attributes']) . ' />';
+
+  if (isset($element['#field_suffix'])) {
+    $output .= ' <span class="field-suffix">' . $element['#field_suffix'] . '</span>';
+  }
+
+  return theme('form_element', $element, $output) . $extra;
+}
+
+function bootstrap_foundation_textarea($element) {
+  $class = array('form-textarea');
+  _form_set_class($element, array('form-control'));
+
+  // Add teaser behavior (must come before resizable)
+  if (!empty($element['#teaser'])) {
+    drupal_add_js('misc/teaser.js');
+    // Note: arrays are merged in drupal_get_js().
+    drupal_add_js(array('teaserCheckbox' => array($element['#id'] => $element['#teaser_checkbox'])), 'setting');
+    drupal_add_js(array('teaser' => array($element['#id'] => $element['#teaser'])), 'setting');
+    $class[] = 'teaser btn btn-default';
+  }
+
+  // Add resizable behavior
+  if ($element['#resizable'] !== FALSE) {
+    drupal_add_js('misc/textarea.js');
+    $class[] = 'resizable';
+  }
+
+  _form_set_class($element, $class);
+  return theme('form_element', $element, '<textarea cols="' . $element['#cols'] . '" rows="' . $element['#rows'] . '" name="' . $element['#name'] . '" id="' . $element['#id'] . '" ' . drupal_attributes($element['#attributes']) . '>' . check_plain($element['#value']) . '</textarea>');
+}
+
+function bootstrap_foundation_menu_local_tasks() {
+  $output = '';
+
+  if ($primary = menu_primary_local_tasks()) {
+    $output .= "<ul role=\"navigation\" class=\"nav nav-tabs primary-tasks\">\n" . $primary . "</ul>\n";
+  }
+  if ($secondary = menu_secondary_local_tasks()) {
+    $output .= "<div role=\"navigation\" class=\"navbar navbar-default  navbar-static-top navbar-short\"><ul class=\"nav navbar-nav secondary-tasks\">\n" . $secondary . "</ul></div>\n";
+  }
+
+  return $output;
+}
+
+function bootstrap_foundation_password($element) {
+  $size = $element['#size'] ? ' size="' . $element['#size'] . '" ' : '';
+  $maxlength = $element['#maxlength'] ? ' maxlength="' . $element['#maxlength'] . '" ' : '';
+  _form_set_class($element, array('form-control'));
+
+  _form_set_class($element, array('form-text'));
+  $output = '<input type="password" name="' . $element['#name'] . '" id="' . $element['#id'] . '" ' . $maxlength . $size . drupal_attributes($element['#attributes']) . ' />';
+  return theme('form_element', $element, $output);
+}
+
+function bootstrap_foundation_table($header, $rows, $attributes = array(), $caption = NULL) {
+  // Add sticky headers, if applicable.
+  if (count($header)) {
+    drupal_add_js('misc/tableheader.js');
+    // Add 'sticky-enabled' class to the table to identify it for JS.
+    // This is needed to target tables constructed by this function.
+    $attributes['class'] = empty($attributes['class']) ? 'sticky-enabled' : ($attributes['class'] . ' sticky-enabled');
+  }
+  $attributes['class'] = empty($attributes['class']) ? 'table' : ($attributes['class'] . ' table');
+
+  $output = '<table' . drupal_attributes($attributes) . ">\n";
+
+  if (isset($caption)) {
+    $output .= '<caption>' . $caption . "</caption>\n";
+  }
+
+  // Format the table header:
+  if (count($header)) {
+    $ts = tablesort_init($header);
+    // HTML requires that the thead tag has tr tags in it followed by tbody
+    // tags. Using ternary operator to check and see if we have any rows.
+    $output .= (count($rows) ? ' <thead><tr>' : ' <tr>');
+    foreach ($header as $cell) {
+      $cell = tablesort_header($cell, $header, $ts);
+      $output .= _theme_table_cell($cell, TRUE);
+    }
+    // Using ternary operator to close the tags based on whether or not there are rows
+    $output .= (count($rows) ? " </tr></thead>\n" : "</tr>\n");
+  }
+  else {
+    $ts = array();
+  }
+
+  // Format the table rows:
+  if (count($rows)) {
+    $output .= "<tbody>\n";
+    $flip = array(
+      'even' => 'odd',
+      'odd' => 'even',
+    );
+    $class = 'even';
+    foreach ($rows as $number => $row) {
+      $attributes = array();
+
+      // Check if we're dealing with a simple or complex row
+      if (isset($row['data'])) {
+        foreach ($row as $key => $value) {
+          if ($key == 'data') {
+            $cells = $value;
+          }
+          else {
+            $attributes[$key] = $value;
+          }
+        }
+      }
+      else {
+        $cells = $row;
+      }
+      if (count($cells)) {
+        // Add odd/even class
+        $class = $flip[$class];
+        if (isset($attributes['class'])) {
+          $attributes['class'] .= ' ' . $class;
+        }
+        else {
+          $attributes['class'] = $class;
+        }
+
+        // Build row
+        $output .= ' <tr' . drupal_attributes($attributes) . '>';
+        $i = 0;
+        foreach ($cells as $cell) {
+          $cell = tablesort_cell($cell, $header, $ts, $i++);
+          $output .= _theme_table_cell($cell);
+        }
+        $output .= " </tr>\n";
+      }
+    }
+    $output .= "</tbody>\n";
+  }
+
+  $output .= "</table>\n";
+  return $output;
+}
+
 /**
  * Intercept page template variables
  *

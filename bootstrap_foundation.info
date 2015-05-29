@@ -24,7 +24,6 @@ regions[footer3] = Footer 3
 regions[footer] = Post Footer
 
 ; Let's enable some features
-features[] = logo
 features[] = name
 features[] = slogan
 features[] = mission
@@ -40,6 +39,7 @@ settings[bootstrap_block_edit_links]        = 1
 settings[bootstrap_rebuild_registry]        = 0
 settings[bootstrap_showgrid]                = 0
 settings[bootstrap_animated_submit]         = 1
+settings[toggle_logo] = 0
 
 ; Information added by drupal.org packaging script on 2011-03-14
 version = "6.22"
