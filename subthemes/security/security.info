@@ -1,0 +1,35 @@
+name = Security
+description = <whatever works for you>
+core = 6.x
+base theme = bootstrap_foundation
+stylesheets[screen,projection][] = security.css
+
+scripts[] = js/theme.js
+
+regions[header] = Header
+regions[banner] = Banner
+regions[left] = First sidebar
+regions[right] = Second sidebar
+regions[content] = Content
+regions[footer1] = Footer 1
+regions[footer2] = Footer 2
+regions[footer3] = Footer 3
+regions[footer] = Post Footer
+
+; Let's enable some features
+features[] = name
+features[] = slogan
+features[] = mission
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = search
+features[] = favicon
+features[] = primary_links
+features[] = secondary_links
+
+; Set the default settings to be used in theme-settings.php
+settings[bootstrap_block_edit_links]        = 1
+settings[bootstrap_rebuild_registry]        = 0
+settings[bootstrap_showgrid]                = 0
+settings[bootstrap_animated_submit]         = 1
+settings[toggle_logo] = 0
