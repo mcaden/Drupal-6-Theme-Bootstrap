@@ -81,3 +81,7 @@ table td.checkbox {
   color: white;
   text-decoration: underline;
 }
+
+html.js div fieldset.collapsed {
+	height:auto;
+}
