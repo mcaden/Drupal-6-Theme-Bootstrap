@@ -6,10 +6,6 @@
 
 <?php if ($submitted || $terms): ?>
   <div class="meta">
-  <?php if ($submitted): ?>
-    <div class="submitted"><?php print $submitted ?></div>
-  <?php endif; ?>
-
   <?php if ($terms): ?>
     <div class="terms"><?php print $terms ?></div>
   <?php endif;?>

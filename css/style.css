@@ -2,6 +2,10 @@
   margin-top: -1px;
 }
 
+.main-content {
+  padding-bottom: 30px;
+}
+
 #search input[type="text"] {
   -webkit-transition: width .5s; /* Safari */
   transition: width .5s;
