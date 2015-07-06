@@ -11,7 +11,7 @@
 
 <body class="<?php print $body_classes; ?>">
 
-<div class="container">
+<div class="container-fluid">
   <div id="header-image" class="row">
     <img src="/<?php echo path_to_theme() . "/images/header.png"; ?>" />
   </div>

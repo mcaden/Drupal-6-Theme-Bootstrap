@@ -90,7 +90,11 @@ html.js .navbar {
 	}
 	
 	html.js .container-fluid  {
-		padding-right:2px;
 		align-items:center;
 	}
+}
+
+.not-front #header-image {
+  max-height: 300px;
+  overflow: hidden;
 }

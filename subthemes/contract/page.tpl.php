@@ -11,8 +11,8 @@
 
 <body class="<?php print $body_classes; ?>">
 
-<div class="container">
-  <div id="header-image" class="row">
+<div class="container-fluid">
+  <div id="header-image" class="row hidden">
     <img src="/<?php echo path_to_theme() . "/images/header.jpg"; ?>" />
   </div>
   <div id="header" class="row">

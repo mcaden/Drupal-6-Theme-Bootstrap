@@ -1,6 +1,10 @@
 .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
   margin-top: -1px;
-}
+}             
+
+#header-image {
+  text-align: center;
+}  
 
 .main-content {
   padding-bottom: 30px;
